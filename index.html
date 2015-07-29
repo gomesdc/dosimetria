@@ -46,10 +46,12 @@ and open the template in the editor.
         </div>
             
             <script type="text/javascript">
+                // Carrega a biblioteca de visualização do google
                 google.load("visualization", "1", {'packages':['corechart', 'table']});
+                // Apos o carregamento executa a funcao
                 google.setOnLoadCallback(getDrogas);
                 
-                var query;
+                // Recupera as drogas que constam na planilha
                 function getDrogas(){
                     query = new google.visualization.Query(
                     'https://docs.google.com/spreadsheets/d/1sa1IoM5qmSOPmUoo6dC-YK6R1z__ysJ7aC2gq_azae4/gviz/tq?gid=1548055939');
@@ -70,6 +72,7 @@ and open the template in the editor.
                     });
                 };
                 
+                // Recupera as unidades de medidas
                 function getUnidadeMedidas(){
                     var tipoDroga = $('#tipo_droga').val();
                     if (tipoDroga === ''){
@@ -84,7 +87,8 @@ and open the template in the editor.
                     }
                     
                 }
-
+                
+                // Trata a resposta da consulta do metodo getUnidadesMedidas
                 function handleResponseUnidadeMedidas(response) {
                     if (response.isError()) {
                       alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
@@ -101,6 +105,7 @@ and open the template in the editor.
                     $('#unidade_medida').html(options);
                 }
                 
+                // Inicia a criacao do Grafico
                 function drawChart(){
                     var tipoDroga = $('#tipo_droga').val();
                     var unidadeMedida = $('#unidade_medida').val();
@@ -129,6 +134,7 @@ and open the template in the editor.
                     return false;
                 }
                 
+                // Gera o Grafico com a resposta da funcao drawChart
                 function handleResponseDrawChart(response){
                     var unidadeMedida = $('#unidade_medida').val();
                     var dataResponse = response.getDataTable();
@@ -147,10 +153,6 @@ and open the template in the editor.
                             Quantidade: <b>'+dataResponse.getValue(i,2)+' '+unidadeMedida.toLowerCase()+'</b><br/>\
                             Quantum de aumento: <b>'+quantumTotal+' meses</b>';
                         
-                        
-                        
-                        
-                        
                         dataToDraw.addRow([{v:quantumTotal}, {v:dataResponse.getValue(i,2)}, tooltip]);
                     }
 
@@ -162,7 +164,7 @@ and open the template in the editor.
                         legend: 'none',
                         tooltip: {
                             isHtml: true
-                        },
+                        }
                         //explorer: {
                         //    maxZoomIn: 15,
                         //   maxZoomOut: 0,
@@ -179,6 +181,7 @@ and open the template in the editor.
                     table.draw(dataResponse);
                 }
                 
+                // Calcula o total do quantum de aumento
                 function quantumCalc(values){
                     var result = 0;
                     //console.log(values);
