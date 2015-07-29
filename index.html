@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Dossimetria da pena</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h2>2ª CCR</h2>
+            <form onSubmit='return drawChart();'>
+                <label>Selecione a droga
+                    <select id="tipo_droga" style="width: 200px" onChange='getUnidadeMedidas();'>
+                        <option>CARREGANDO...</option>
+                    </select>
+                </label><br/>
+                <label>Selecione a unidade de medida
+                    <select id="unidade_medida" style="width: 200px" onChange=''>
+                        <option></option>
+                    </select>
+                </label><br/>
+                <fieldset>
+                    <legend>Filtros</legend>
+                    <label>Quantidade mínima
+                        <input id="qt_minima" type="number"/>
+                    </label><br/>
+                    <label>Quantidade máxima
+                        <input id="qt_maxima" type="number"/>
+                    </label>
+                </fieldset>
+                <input type="submit" value="Gerar relatório"/>
+            </form>
+            
+            
+            <div id="chart_div" style="height:600px"></div>
+            <div id="table_div"></div>
+
+
+        </div>
+            
+            <script type="text/javascript">
+                google.load("visualization", "1", {'packages':['corechart', 'table']});
+                google.setOnLoadCallback(getDrogas);
+                
+                var query;
+                function getDrogas(){
+                    query = new google.visualization.Query(
+                    'https://docs.google.com/spreadsheets/d/1sa1IoM5qmSOPmUoo6dC-YK6R1z__ysJ7aC2gq_azae4/gviz/tq?gid=1548055939');
+                    query.send(function(response){
+                        if (response.isError()) {
+                            alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+                            return;
+                        }
+
+                        var data = response.getDataTable();
+                        var numRows = data.getNumberOfRows();
+                        var options = '<option><\/option>';
+                        for(var i = 0; i < numRows; i++ ){
+                            options += '<option value="'+data.getValue(i, 0)+'">'+data.getValue(i, 0)+'</option>'
+                        }
+                        $('#tipo_droga').html(options);
+                        
+                    });
+                };
+                
+                function getUnidadeMedidas(){
+                    var tipoDroga = $('#tipo_droga').val();
+                    if (tipoDroga === ''){
+                        alert('em branco');
+                    }else{
+                        $('#unidade_medida').html('<option>CARREGANDO...</option>');
+                        
+                        var queryString = encodeURIComponent('SELECT G WHERE E = \''+tipoDroga+'\' AND G IS NOT NULL');
+                        var query = new google.visualization.Query(
+                        'https://docs.google.com/spreadsheets/d/1sa1IoM5qmSOPmUoo6dC-YK6R1z__ysJ7aC2gq_azae4/gviz/tq?gid=0&header=1&tq=' + queryString);
+                        query.send(handleResponseUnidadeMedidas);
+                    }
+                    
+                }
+
+                function handleResponseUnidadeMedidas(response) {
+                    if (response.isError()) {
+                      alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+                      return;
+                    }
+
+                    var data = response.getDataTable();
+                    var unidadeMedidas = data.getDistinctValues('G');
+                    
+                    var options = '<option><\/option>';
+                    for(var i = 0; i < unidadeMedidas.length; i++ ){
+                        options += '<option value="'+unidadeMedidas[i]+'">'+unidadeMedidas[i]+'</option>'
+                    }
+                    $('#unidade_medida').html(options);
+                }
+                
+                function drawChart(){
+                    var tipoDroga = $('#tipo_droga').val();
+                    var unidadeMedida = $('#unidade_medida').val();
+                    var qtMinima = $('#qt_minima').val();
+                    var qtMaxima = $('#qt_maxima').val();
+                    
+                    var filtros = '';
+                    var numeric = /^\d+$/;
+                    if (qtMinima.match(numeric)){
+                        filtros += ' AND F >= '+qtMinima;
+                    }
+                    
+                    if (qtMaxima.match(numeric)){
+                        filtros += ' AND F <= '+qtMaxima;
+                    }
+                    
+                    if (tipoDroga === '' || unidadeMedida === ''){
+                        alert('Selecione a droga/unidade primeiro!');
+                    }else{
+                        var queryString = encodeURIComponent('SELECT A, B, F, M, N, O WHERE E = \''+tipoDroga+'\' AND G LIKE \''+unidadeMedida+'\' AND ( M IS NOT NULL OR N IS NOT NULL OR O IS NOT NULL) '+filtros+' ORDER BY F ');
+                        var query = new google.visualization.Query(
+                        'https://docs.google.com/spreadsheets/d/1sa1IoM5qmSOPmUoo6dC-YK6R1z__ysJ7aC2gq_azae4/gviz/tq?gid=0&header=1&tq=' + queryString);
+                        query.send(handleResponseDrawChart);
+
+                    }
+                    return false;
+                }
+                
+                function handleResponseDrawChart(response){
+                    var unidadeMedida = $('#unidade_medida').val();
+                    var dataResponse = response.getDataTable();
+                    var sizeRows = dataResponse.getNumberOfRows();
+                    
+                    var dataToDraw = new google.visualization.DataTable();
+                    
+                    dataToDraw.addColumn('number', 'Quantum de aumento');
+                    dataToDraw.addColumn('number', 'Quantidade');
+                    dataToDraw.addColumn({type:'string',role:'tooltip', p:{html:true}});
+                    
+                    for(var i = 0; i < sizeRows; i++){
+                        var quantumTotal = quantumCalc([dataResponse.getValue(i,3),dataResponse.getValue(i,4),dataResponse.getValue(i,5)]);
+                        var tooltip = 'Tribunal: <b>'+ dataResponse.getValue(i,1)+'</b><br/>\
+                            Processo: <b>'+dataResponse.getValue(i,0)+'</b><br/>\
+                            Quantidade: <b>'+dataResponse.getValue(i,2)+' '+unidadeMedida.toLowerCase()+'</b><br/>\
+                            Quantum de aumento: <b>'+quantumTotal+' meses</b>';
+                        
+                        
+                        
+                        
+                        
+                        dataToDraw.addRow([{v:quantumTotal}, {v:dataResponse.getValue(i,2)}, tooltip]);
+                    }
+
+                    // Set chart options
+                    var options = {
+                        title: 'Quantidade X Quantum de Aumento',
+                        hAxis: {title: 'Quantum de Aumento'},//, minValue: 0, maxValue: 100},
+                        vAxis: {title: 'Quantidade'},//, minValue: 0, maxValue: 100},
+                        legend: 'none',
+                        tooltip: {
+                            isHtml: true
+                        },
+                        //explorer: {
+                        //    maxZoomIn: 15,
+                        //   maxZoomOut: 0,
+                        //    axis: 'vertical',
+                        //    keepInBounds: true
+                        //}
+                    };
+
+                    var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+
+                    chart.draw(dataToDraw, options);
+                    
+                    var table = new google.visualization.Table(document.getElementById('table_div'));
+                    table.draw(dataResponse);
+                }
+                
+                function quantumCalc(values){
+                    var result = 0;
+                    //console.log(values);
+                    for (var i = 0; i < 3; i++){
+                        if(values[i] != null){
+                            var value = values[i].split(/a|m|d/);
+                            result += (Number(value[0]) * 12) + Number(value[1]) + (Number(value[2])/30);
+                        }
+                    }
+                    //console.log(result);
+                    return result;
+                }
+            </script>
+    </body>
+</html>
