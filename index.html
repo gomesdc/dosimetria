@@ -6,38 +6,56 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>Dosimetria da pena</title>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Dosimetria da pena</title>
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     </head>
     <body>
         <div class="container">
-            <h2>2ª CCR</h2>
-            <form onSubmit='return drawChart();'>
-                <label>Selecione a droga
-                    <select id="tipo_droga" style="width: 200px" onChange='getUnidadeMedidas();'>
-                        <option>CARREGANDO...</option>
-                    </select>
-                </label><br/>
-                <label>Selecione a unidade de medida
-                    <select id="unidade_medida" style="width: 200px" onChange=''>
-                        <option></option>
-                    </select>
-                </label><br/>
-                <fieldset>
-                    <legend>Filtros</legend>
-                    <label>Quantidade mínima
-                        <input id="qt_minima" type="number"/>
-                    </label><br/>
-                    <label>Quantidade máxima
-                        <input id="qt_maxima" type="number"/>
-                    </label>
-                </fieldset>
-                <input type="submit" value="Gerar relatório"/>
-            </form>
-            
+                <h2>2ª CCR</h2>
+                <form onSubmit='return drawChart();' class="form-horizontal">
+                    <div class="form-group">
+                        <label for="tipo_droga" class="col-sm-2">Selecione a droga</label>
+                        <div class="col-sm-3">
+                            <select id="tipo_droga" onChange='getUnidadeMedidas();' class="form-control">
+                                <option>CARREGANDO...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="unidade_medida" class="col-sm-2">Selecione a unidade de medida</label>
+                        <div class="col-sm-3">
+                            <select id="unidade_medida" class="form-control">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                    <fieldset>
+                        <legend>Filtros</legend>
+                        <div class="form-group">
+                            <label for="qt_minima" class="col-sm-2">Quantidade mínima</label>
+                            <div class="col-sm-3">
+                                <input id="qt_minima" type="number" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="qt_maxima" class="col-sm-2">Quantidade máxima</label>
+                            <div class="col-sm-3">
+                                <input id="qt_maxima" type="number" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="tribunais" class="col-sm-2">Tribunais</label>
+                            <div id="div_tribunais" class="col-sm-10">
+                                
+                            </div>
+                        </div>
+                    </fieldset>
+                    <input type="submit" value="Gerar relatório" class="btn btn-primary"/>
+                </form>
             
             <div id="chart_div" style="height:600px"></div>
             <div id="table_div"></div>
@@ -49,13 +67,13 @@ and open the template in the editor.
                 // Carrega a biblioteca de visualização do google
                 google.load("visualization", "1", {'packages':['corechart', 'table']});
                 // Apos o carregamento executa a funcao
-                google.setOnLoadCallback(getDrogas);
+                google.setOnLoadCallback(getDrogasAndTribunais);
                 
                 // Recupera as drogas que constam na planilha
-                function getDrogas(){
-                    query = new google.visualization.Query(
+                function getDrogasAndTribunais(){
+                    queryDrogas = new google.visualization.Query(
                     'https://docs.google.com/spreadsheets/d/1sa1IoM5qmSOPmUoo6dC-YK6R1z__ysJ7aC2gq_azae4/gviz/tq?gid=1548055939');
-                    query.send(function(response){
+                    queryDrogas.send(function(response){
                         if (response.isError()) {
                             alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
                             return;
@@ -67,18 +85,34 @@ and open the template in the editor.
                         for(var i = 0; i < numRows; i++ ){
                             options += '<option value="'+data.getValue(i, 0)+'">'+data.getValue(i, 0)+'</option>'
                         }
-                        $('#tipo_droga').html(options);
-                        
+                        document.getElementById('tipo_droga').innerHTML = options;
+                    });
+                    
+                    queryTribunais = new google.visualization.Query(
+                    'https://docs.google.com/spreadsheets/d/1sa1IoM5qmSOPmUoo6dC-YK6R1z__ysJ7aC2gq_azae4/gviz/tq?gid=1195586804');
+                    queryTribunais.send(function(response){
+                        if (response.isError()) {
+                            alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+                            return;
+                        }
+
+                        var data = response.getDataTable();
+                        var numRows = data.getNumberOfRows();
+                        var inputs = '';
+                        for(var i = 0; i < numRows; i++ ){
+                            inputs += '<input type="checkbox" name="tribunais" value="'+data.getValue(i, 0)+'"/>'+data.getValue(i, 0)+' ';
+                        }
+                        document.getElementById('div_tribunais').innerHTML = inputs;
                     });
                 };
                 
                 // Recupera as unidades de medidas
                 function getUnidadeMedidas(){
-                    var tipoDroga = $('#tipo_droga').val();
+                    var tipoDroga = document.getElementById('tipo_droga').value;
                     if (tipoDroga === ''){
                         alert('em branco');
                     }else{
-                        $('#unidade_medida').html('<option>CARREGANDO...</option>');
+                        document.getElementById('unidade_medida').innerHTML = '<option>CARREGANDO...</option>';
                         
                         var queryString = encodeURIComponent('SELECT G WHERE E = \''+tipoDroga+'\' AND G IS NOT NULL');
                         var query = new google.visualization.Query(
@@ -102,16 +136,18 @@ and open the template in the editor.
                     for(var i = 0; i < unidadeMedidas.length; i++ ){
                         options += '<option value="'+unidadeMedidas[i]+'">'+unidadeMedidas[i]+'</option>'
                     }
-                    $('#unidade_medida').html(options);
+                    document.getElementById('unidade_medida').innerHTML = options;
                 }
                 
                 // Inicia a criacao do Grafico
                 function drawChart(){
-                    var tipoDroga = $('#tipo_droga').val();
-                    var unidadeMedida = $('#unidade_medida').val();
-                    var qtMinima = $('#qt_minima').val();
-                    var qtMaxima = $('#qt_maxima').val();
+                    var tipoDroga = document.getElementById('tipo_droga').value;
+                    var unidadeMedida = document.getElementById('unidade_medida').value;
+                    var qtMinima = document.getElementById('qt_minima').value;
+                    var qtMaxima = document.getElementById('qt_maxima').value;
+                    var tribunais = document.getElementsByName('tribunais');
                     
+                    // Inicia a criacao dos filtros
                     var filtros = '';
                     var numeric = /^\d+$/;
                     if (qtMinima.match(numeric)){
@@ -121,6 +157,27 @@ and open the template in the editor.
                     if (qtMaxima.match(numeric)){
                         filtros += ' AND F <= '+qtMaxima;
                     }
+                    
+                    var tribunaisArray = [];
+                    if (tribunais.length > 0){
+                        for (var i = 0; i < tribunais.length; i++){
+                            if (tribunais[i].checked){
+                                tribunaisArray.push(tribunais[i].value);
+                            }
+                        }
+                    }
+                    for (var i = 0; i < tribunaisArray.length; i++){
+                        if(i === 0) filtros += ' AND ( ';
+                            
+                        filtros +=  'B LIKE \''+tribunaisArray[i]+'\'';
+                        
+                        if(i === tribunaisArray.length-1){
+                            filtros += ' ) ';
+                        }else{
+                            filtros += ' OR ';
+                        }
+                    }
+                    // Termina a criacao dos filtros
                     
                     if (tipoDroga === '' || unidadeMedida === ''){
                         alert('Selecione a droga/unidade primeiro!');
@@ -136,7 +193,7 @@ and open the template in the editor.
                 
                 // Gera o Grafico com a resposta da funcao drawChart
                 function handleResponseDrawChart(response){
-                    var unidadeMedida = $('#unidade_medida').val();
+                    var unidadeMedida = document.getElementById('unidade_medida').value;
                     var dataResponse = response.getDataTable();
                     var sizeRows = dataResponse.getNumberOfRows();
                     
