@@ -19,56 +19,61 @@ and open the template in the editor.
         <div id="ajax-loading" style="display:none;">
             <img id="img-ajax-loading" src="css/ajax-loading.gif" alt="Loading"/>
         </div>
-        
-        <div class="container">
-            <h2>2ª CCR</h2>
-            <form onSubmit='return drawChart();' class="form-horizontal">
-                <div class="form-group">
-                    <label for="tipo_droga" class="col-sm-2">Selecione a droga</label>
-                    <div class="col-sm-3">
-                        <select id="tipo_droga" onChange='getUnidadeMedidas();' class="form-control">
-                            <option>CARREGANDO...</option>
-                        </select>
-                    </div>
+        <div class="wrap">
+            <div class="container">
+                <div class="jumbotron well-sm">
+                    <h2>2ª CCR</h2>
                 </div>
-                <div class="form-group">
-                    <label for="unidade_medida" class="col-sm-2">Selecione a unidade de medida</label>
-                    <div class="col-sm-3">
-                        <select id="unidade_medida" class="form-control">
-                            <option></option>
-                        </select>
-                    </div>
-                </div>
-                <fieldset>
-                    <legend>Filtros</legend>
+                <form onSubmit='return drawChart();' class="form-horizontal">
                     <div class="form-group">
-                        <label for="qt_minima" class="col-sm-2">Quantidade mínima</label>
+                        <label for="tipo_droga" class="col-sm-2">Selecione a droga</label>
                         <div class="col-sm-3">
-                            <input id="qt_minima" type="number" class="form-control"/>
+                            <select id="tipo_droga" onChange='getUnidadeMedidas();' class="form-control">
+                                <option>CARREGANDO...</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="qt_maxima" class="col-sm-2">Quantidade máxima</label>
+                        <label for="unidade_medida" class="col-sm-2">Selecione a unidade de medida</label>
                         <div class="col-sm-3">
-                            <input id="qt_maxima" type="number" class="form-control"/>
+                            <select id="unidade_medida" class="form-control">
+                                <option></option>
+                            </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="tribunais" class="col-sm-2">Tribunais</label>
-                        <div id="div_tribunais" class="col-sm-10">
-
+                    <fieldset>
+                        <legend>Filtros</legend>
+                        <div class="form-group">
+                            <label for="qt_minima" class="col-sm-2">Quantidade mínima</label>
+                            <div class="col-sm-3">
+                                <input id="qt_minima" type="number" class="form-control"/>
+                            </div>
                         </div>
-                    </div>
-                </fieldset>
-                <input type="submit" value="Gerar relatório" class="btn btn-primary"/>
-            </form>
-            
-            <div id="chart_div" style="height:600px"></div>
-            <div id="table_div"></div>
+                        <div class="form-group">
+                            <label for="qt_maxima" class="col-sm-2">Quantidade máxima</label>
+                            <div class="col-sm-3">
+                                <input id="qt_maxima" type="number" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="tribunais" class="col-sm-2">Tribunais</label>
+                            <div id="div_tribunais" class="col-sm-10"></div>
+                        </div>
+                    </fieldset>
+                    <input type="submit" value="Gerar Gráficos" class="btn btn-primary"/>
+                </form>
 
-
+                <div id="chart_div"></div>
+                <div id="table_div"></div>
+            </div> <!-- FIm div container -->
+        </div> <!-- FIm div wrap -->
+        <div class="footer">
+            <div class="container text-center">
+                Ministério Público Federal<br/>
+                Procuradoria da República no Município de Cachoeiro de Itapemirim/ES<br/>
+                Desenvolvido por <a href="mailto:danielgomes@mpf.mp.br">Daniel da Cruz Gomes</a>
+            </div>
         </div>
-            
             <script type="text/javascript">
                 // Carrega a biblioteca de visualização do google
                 google.load("visualization", "1", {'packages':['corechart', 'table']});
@@ -120,7 +125,7 @@ and open the template in the editor.
                     }else{
                         document.getElementById('unidade_medida').innerHTML = '<option>CARREGANDO...</option>';
                         
-                        var queryString = encodeURIComponent('SELECT G WHERE E = \''+tipoDroga+'\' AND G IS NOT NULL');
+                        var queryString = encodeURIComponent('SELECT G WHERE E = \''+tipoDroga+'\' AND G IS NOT NULL AND ( M IS NOT NULL OR N IS NOT NULL OR O IS NOT NULL)');
                         var query = new google.visualization.Query(
                         'https://docs.google.com/spreadsheets/d/1sa1IoM5qmSOPmUoo6dC-YK6R1z__ysJ7aC2gq_azae4/gviz/tq?gid=0&header=1&tq=' + queryString);
                         query.send(handleResponseUnidadeMedidas);
@@ -185,7 +190,7 @@ and open the template in the editor.
                     }
                     // Termina a criacao dos filtros
                     
-                    if (tipoDroga === '' || unidadeMedida === ''){
+                    if (tipoDroga === '' || tipoDroga === 'CARREGANDO...'|| unidadeMedida === '' || unidadeMedida === 'CARREGANDO...'){
                         alert('Selecione a droga/unidade primeiro!');
                     }else{
                         var queryString = encodeURIComponent('SELECT A, B, F, M, N, O WHERE E = \''+tipoDroga+'\' AND G LIKE \''+unidadeMedida+'\' AND ( M IS NOT NULL OR N IS NOT NULL OR O IS NOT NULL) '+filtros+' ORDER BY F ');
@@ -231,12 +236,14 @@ and open the template in the editor.
                     // Set chart options
                     var options = {
                         title: 'Quantidade X Quantum de Aumento',
+                        height: '600',
                         hAxis: {title: 'Quantum de Aumento'},//, minValue: 0, maxValue: 100},
                         vAxis: {title: 'Quantidade'},//, minValue: 0, maxValue: 100},
                         legend: 'none',
                         tooltip: {
                             isHtml: true
                         }
+                        
                         //explorer: {
                         //    maxZoomIn: 15,
                         //   maxZoomOut: 0,
