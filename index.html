@@ -11,51 +11,57 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Dosimetria da pena</title>
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="css/default.css"/>
     </head>
     <body>
+        <div id="overlay" style="display:none;"></div>
+        <div id="ajax-loading" style="display:none;">
+            <img id="img-ajax-loading" src="css/ajax-loading.gif" alt="Loading"/>
+        </div>
+        
         <div class="container">
-                <h2>2ª CCR</h2>
-                <form onSubmit='return drawChart();' class="form-horizontal">
+            <h2>2ª CCR</h2>
+            <form onSubmit='return drawChart();' class="form-horizontal">
+                <div class="form-group">
+                    <label for="tipo_droga" class="col-sm-2">Selecione a droga</label>
+                    <div class="col-sm-3">
+                        <select id="tipo_droga" onChange='getUnidadeMedidas();' class="form-control">
+                            <option>CARREGANDO...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="unidade_medida" class="col-sm-2">Selecione a unidade de medida</label>
+                    <div class="col-sm-3">
+                        <select id="unidade_medida" class="form-control">
+                            <option></option>
+                        </select>
+                    </div>
+                </div>
+                <fieldset>
+                    <legend>Filtros</legend>
                     <div class="form-group">
-                        <label for="tipo_droga" class="col-sm-2">Selecione a droga</label>
+                        <label for="qt_minima" class="col-sm-2">Quantidade mínima</label>
                         <div class="col-sm-3">
-                            <select id="tipo_droga" onChange='getUnidadeMedidas();' class="form-control">
-                                <option>CARREGANDO...</option>
-                            </select>
+                            <input id="qt_minima" type="number" class="form-control"/>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="unidade_medida" class="col-sm-2">Selecione a unidade de medida</label>
+                        <label for="qt_maxima" class="col-sm-2">Quantidade máxima</label>
                         <div class="col-sm-3">
-                            <select id="unidade_medida" class="form-control">
-                                <option></option>
-                            </select>
+                            <input id="qt_maxima" type="number" class="form-control"/>
                         </div>
                     </div>
-                    <fieldset>
-                        <legend>Filtros</legend>
-                        <div class="form-group">
-                            <label for="qt_minima" class="col-sm-2">Quantidade mínima</label>
-                            <div class="col-sm-3">
-                                <input id="qt_minima" type="number" class="form-control"/>
-                            </div>
+                    <div class="form-group">
+                        <label for="tribunais" class="col-sm-2">Tribunais</label>
+                        <div id="div_tribunais" class="col-sm-10">
+
                         </div>
-                        <div class="form-group">
-                            <label for="qt_maxima" class="col-sm-2">Quantidade máxima</label>
-                            <div class="col-sm-3">
-                                <input id="qt_maxima" type="number" class="form-control"/>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="tribunais" class="col-sm-2">Tribunais</label>
-                            <div id="div_tribunais" class="col-sm-10">
-                                
-                            </div>
-                        </div>
-                    </fieldset>
-                    <input type="submit" value="Gerar relatório" class="btn btn-primary"/>
-                </form>
+                    </div>
+                </fieldset>
+                <input type="submit" value="Gerar relatório" class="btn btn-primary"/>
+            </form>
             
             <div id="chart_div" style="height:600px"></div>
             <div id="table_div"></div>
@@ -100,7 +106,7 @@ and open the template in the editor.
                         var numRows = data.getNumberOfRows();
                         var inputs = '';
                         for(var i = 0; i < numRows; i++ ){
-                            inputs += '<input type="checkbox" name="tribunais" value="'+data.getValue(i, 0)+'"/>'+data.getValue(i, 0)+' ';
+                            inputs += '<label class="checkbox-inline" style="margin: 0 10px 0 0"><input type="checkbox" name="tribunais" value="'+data.getValue(i, 0)+'"/>'+data.getValue(i, 0)+'</label>';
                         }
                         document.getElementById('div_tribunais').innerHTML = inputs;
                     });
@@ -185,6 +191,9 @@ and open the template in the editor.
                         var queryString = encodeURIComponent('SELECT A, B, F, M, N, O WHERE E = \''+tipoDroga+'\' AND G LIKE \''+unidadeMedida+'\' AND ( M IS NOT NULL OR N IS NOT NULL OR O IS NOT NULL) '+filtros+' ORDER BY F ');
                         var query = new google.visualization.Query(
                         'https://docs.google.com/spreadsheets/d/1sa1IoM5qmSOPmUoo6dC-YK6R1z__ysJ7aC2gq_azae4/gviz/tq?gid=0&header=1&tq=' + queryString);
+                        
+                        toggleOverlay();
+                        
                         query.send(handleResponseDrawChart);
 
                     }
@@ -193,6 +202,12 @@ and open the template in the editor.
                 
                 // Gera o Grafico com a resposta da funcao drawChart
                 function handleResponseDrawChart(response){
+                    toggleOverlay();
+                    if (response.isError()) {
+                        alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+                        return;
+                    }
+                    
                     var unidadeMedida = document.getElementById('unidade_medida').value;
                     var dataResponse = response.getDataTable();
                     var sizeRows = dataResponse.getNumberOfRows();
@@ -251,6 +266,18 @@ and open the template in the editor.
                     //console.log(result);
                     return result;
                 }
+                
+                function toggleOverlay(){
+                    var display = document.getElementById('overlay').style.display
+                    if (display === 'none'){
+                        document.getElementById('overlay').style.display = 'block';
+                        document.getElementById('ajax-loading').style.display = 'block';
+                    }else{
+                        document.getElementById('overlay').style.display = 'none';
+                        document.getElementById('ajax-loading').style.display = 'none';
+                    }
+                }
+                
             </script>
     </body>
 </html>
