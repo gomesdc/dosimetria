@@ -24,23 +24,36 @@ and open the template in the editor.
                 <div class="jumbotron well-sm">
                     <h2>2ª CCR</h2>
                 </div>
-                <form onSubmit='return drawChart();' class="form-horizontal">
+                <form onSubmit='return false;' class="form-horizontal">
                     <div class="form-group">
-                        <label for="tipo_droga" class="col-sm-2">Selecione a droga</label>
+                        <label for="tipo_grafico" class="col-sm-2">Tipo de gráfico<span class="text-danger">*</span></label>
                         <div class="col-sm-3">
-                            <select id="tipo_droga" onChange='getUnidadeMedidas();' class="form-control">
-                                <option>CARREGANDO...</option>
+                            <select id="tipo_grafico_select" onChange='beginning();' class="form-control">
+                                <option selected></option>
+                                <option value="UNICO">ÚNICO</option>
+                                <option value="SOBREPOSTO">SOBREPOSTO</option>
+                                <option value="MULTIPLO">MULTIPLO</option>
                             </select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="unidade_medida" class="col-sm-2">Selecione a unidade de medida</label>
+                        <label for="tipo_droga" class="col-sm-2">Selecione a droga<span class="text-danger">*</span></label>
+                        <div class="col-sm-3">
+                            <select id="tipo_droga" onChange='getUnidadeMedidas();' class="form-control">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="unidade_medida" class="col-sm-2">Selecione a unidade de medida<span class="text-danger">*</span></label>
                         <div class="col-sm-3">
                             <select id="unidade_medida" class="form-control">
                                 <option></option>
                             </select>
                         </div>
                     </div>
+                    <div class="form-group"><small class="text-danger col-sm-12">Campos marcados com * são obrigatórios!</small></div>
+                    
                     <fieldset>
                         <legend>Filtros</legend>
                         <div class="form-group">
@@ -56,11 +69,13 @@ and open the template in the editor.
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="tribunais" class="col-sm-2">Tribunais</label>
+                            <label class="col-sm-2">Tribunais</label>
                             <div id="div_tribunais" class="col-sm-10"></div>
                         </div>
                     </fieldset>
-                    <input type="submit" value="Gerar Gráficos" class="btn btn-primary"/>
+                    <div id="form_buttons">
+                        <button class="btn btn-primary disabled">Gerar Gráficos</button>
+                    </div>
                 </form>
 
                 <div id="chart_div"></div>
@@ -75,14 +90,43 @@ and open the template in the editor.
             </div>
         </div>
             <script type="text/javascript">
+                document.getElementById('tipo_grafico_select').value = '';
+                document.getElementById('tipo_grafico_select').disabled = false;
+                var tipoGrafico = '';
+                
                 // Carrega a biblioteca de visualização do google
                 google.load("visualization", "1", {'packages':['corechart', 'table']});
                 // Apos o carregamento executa a funcao
-                google.setOnLoadCallback(getDrogasAndTribunais);
+                //google.setOnLoadCallback();
                 
                 // Recupera as drogas que constam na planilha
-                function getDrogasAndTribunais(){
-                    queryDrogas = new google.visualization.Query(
+                function beginning(){
+                    var tipoGraficoSelect = document.getElementById('tipo_grafico_select');
+                    tipoGrafico = tipoGraficoSelect.value;
+                    
+                    tipoGraficoSelect.disabled = true;
+                    
+                    var buttons = '';
+  
+                    if (tipoGrafico === 'UNICO'){
+                        buttons = '<button class="btn btn-primary" onClick="drawChart(1);">Gerar Gráficos</button>';
+                    }else if(tipoGrafico === 'SOBREPOSTO'){
+                        buttons = '<button class="btn btn-primary" onClick="drawChart(1);">Gerar Gráfico 1</button>';
+                        buttons += '&nbsp;<button class="btn btn-warning" onClick="drawChart(2);">Gerar Gráfico 2</button>';
+                    }else if(tipoGrafico === 'MULTIPLO'){
+                        buttons = '<button class="btn btn-primary" onClick="drawChart(1);">Gerar Gráfico 1</button>';
+                        buttons += '&nbsp;<button class="btn btn-warning" onClick="drawChart(2);">Gerar Gráficos 2</button>';
+                        buttons += '&nbsp;<button class="btn btn-success" onClick="drawChart(3);">Gerar Gráficos 3</button>';
+                        buttons += '&nbsp;<button class="btn btn-info" onClick="drawChart(4);">Gerar Gráficos 4</button>';
+                        buttons += '&nbsp;<button class="btn btn-danger" onClick="drawChart(5);">Gerar Gráficos 5</button>';
+                    }else{
+                        return false;
+                    }
+                    document.getElementById('form_buttons').innerHTML = buttons;
+                    
+                    document.getElementById('tipo_droga').innerHTML = '<option>CARREGANDO...</oprion>';
+                    
+                    var queryDrogas = new google.visualization.Query(
                     'https://docs.google.com/spreadsheets/d/1sa1IoM5qmSOPmUoo6dC-YK6R1z__ysJ7aC2gq_azae4/gviz/tq?gid=1548055939');
                     queryDrogas.send(function(response){
                         if (response.isError()) {
@@ -99,7 +143,7 @@ and open the template in the editor.
                         document.getElementById('tipo_droga').innerHTML = options;
                     });
                     
-                    queryTribunais = new google.visualization.Query(
+                    var queryTribunais = new google.visualization.Query(
                     'https://docs.google.com/spreadsheets/d/1sa1IoM5qmSOPmUoo6dC-YK6R1z__ysJ7aC2gq_azae4/gviz/tq?gid=1195586804');
                     queryTribunais.send(function(response){
                         if (response.isError()) {
