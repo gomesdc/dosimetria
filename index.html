@@ -24,12 +24,12 @@ and open the template in the editor.
                 <div class="jumbotron well-sm">
                     <h2>2ª CCR</h2>
                 </div>
-                <form onSubmit='return false;' class="form-horizontal">
+                <form id="formulario" onSubmit='return false;' class="form-horizontal">
                     <div class="form-group">
                         <label for="tipo_grafico" class="col-sm-2">Tipo de gráfico<span class="text-danger">*</span></label>
                         <div class="col-sm-3">
                             <select id="tipo_grafico_select" onChange='beginning();' class="form-control">
-                                <option selected></option>
+                                <option></option>
                                 <option value="UNICO">ÚNICO</option>
                                 <option value="SOBREPOSTO">SOBREPOSTO</option>
                                 <option value="MULTIPLO">MULTIPLO</option>
@@ -73,13 +73,20 @@ and open the template in the editor.
                             <div id="div_tribunais" class="col-sm-10"></div>
                         </div>
                     </fieldset>
-                    <div id="form_buttons">
-                        <button class="btn btn-primary disabled">Gerar Gráficos</button>
-                    </div>
                 </form>
-
-                <div id="chart_div"></div>
-                <div id="table_div"></div>
+                <div id="primary_buttons" class="row">
+                    <div class="col-sm-3 botton-15">
+                        <button class="btn btn-primary disabled btn-block">Selecione o tipo de gráfico</button>
+                    </div>
+                </div>
+                <div id="secondary_buttons" class="row">
+                </div>
+                <div id="chart_1"></div>
+                <div id="chart_2"></div>
+                <div id="chart_3"></div>
+                <div id="chart_4"></div>
+                <div id="chart_5"></div>
+                <div id="chart_table"></div>
             </div> <!-- FIm div container -->
         </div> <!-- FIm div wrap -->
         <div class="footer">
@@ -93,11 +100,24 @@ and open the template in the editor.
                 document.getElementById('tipo_grafico_select').value = '';
                 document.getElementById('tipo_grafico_select').disabled = false;
                 var tipoGrafico = '';
+                var forms = [];
+                var dados = {};
                 
                 // Carrega a biblioteca de visualização do google
                 google.load("visualization", "1", {'packages':['corechart', 'table']});
                 // Apos o carregamento executa a funcao
                 //google.setOnLoadCallback();
+                
+                function getDivButtons(content){
+                    return '<div class="col-sm-2 botton-15">'+content+'</div>'
+                }
+                
+                function getButtons(content, order, action){
+                    action = action || 'create';
+                    var actions = {create: 'createChart('+order+');', load: 'loadChart('+order+');', clean: 'cleanChart('+order+');'};
+                    var classe = {1: 'primary', 2: 'success', 3: 'danger', 4: 'warning', 5: 'info'};
+                    return '<button class="btn btn-'+classe[order]+' btn-block" onClick="'+actions[action]+'">'+content+'</button>';
+                }
                 
                 // Recupera as drogas que constam na planilha
                 function beginning(){
@@ -106,23 +126,23 @@ and open the template in the editor.
                     
                     tipoGraficoSelect.disabled = true;
                     
-                    var buttons = '';
+                    var primaryButtons = '';
+                    var secondaryButtons = '';
   
                     if (tipoGrafico === 'UNICO'){
-                        buttons = '<button class="btn btn-primary" onClick="drawChart(1);">Gerar Gráficos</button>';
-                    }else if(tipoGrafico === 'SOBREPOSTO'){
-                        buttons = '<button class="btn btn-primary" onClick="drawChart(1);">Gerar Gráfico 1</button>';
-                        buttons += '&nbsp;<button class="btn btn-warning" onClick="drawChart(2);">Gerar Gráfico 2</button>';
-                    }else if(tipoGrafico === 'MULTIPLO'){
-                        buttons = '<button class="btn btn-primary" onClick="drawChart(1);">Gerar Gráfico 1</button>';
-                        buttons += '&nbsp;<button class="btn btn-warning" onClick="drawChart(2);">Gerar Gráficos 2</button>';
-                        buttons += '&nbsp;<button class="btn btn-success" onClick="drawChart(3);">Gerar Gráficos 3</button>';
-                        buttons += '&nbsp;<button class="btn btn-info" onClick="drawChart(4);">Gerar Gráficos 4</button>';
-                        buttons += '&nbsp;<button class="btn btn-danger" onClick="drawChart(5);">Gerar Gráficos 5</button>';
+                        primaryButtons = getDivButtons(getButtons('Gerar Gráficos', 1));
+                    }else if (tipoGrafico === 'SOBREPOSTO' || tipoGrafico === 'MULTIPLO'){
+                        var total = tipoGrafico === 'SOBREPOSTO' ? 2 : 5;
+                        for (var i = 1; i <= total; i++){
+                            primaryButtons += getDivButtons(getButtons('Gerar Gráfico '+i, i));;
+                            secondaryButtons += getDivButtons(getButtons('Ler Dados', i, 'load') + (tipoGrafico === 'MULTIPLO' ? getButtons('Limpar Gráfico '+i, i, 'clean'): ''));
+                        }
                     }else{
                         return false;
                     }
-                    document.getElementById('form_buttons').innerHTML = buttons;
+                    
+                    document.getElementById('primary_buttons').innerHTML = primaryButtons;
+                    document.getElementById('secondary_buttons').innerHTML = secondaryButtons;
                     
                     document.getElementById('tipo_droga').innerHTML = '<option>CARREGANDO...</oprion>';
                     
@@ -161,6 +181,29 @@ and open the template in the editor.
                     });
                 };
                 
+                function saveForm(order){
+                    var form = {tipoDroga: {},unidadeMedida: {}, qtMinima: {}, qtMaxima: {}, tribunais: {}};
+                    form.tipoDroga.innerHtml = document.getElementById('tipo_droga').innerHTML;
+                    form.tipoDroga.value = document.getElementById('tipo_droga').value;
+                    form.unidadeMedida.innerHtml = document.getElementById('unidade_medida').innerHTML;
+                    form.unidadeMedida.value = document.getElementById('unidade_medida').value;
+                    form.qtMinima.value = document.getElementById('qt_minima').value;
+                    form.qtMaxima.value = document.getElementById('qt_maxima').value;
+                    
+                    form.tribunais.innerHtml = document.getElementById('div_tribunais').innerHTML;
+                    form.tribunais.values = [];
+                    
+                    var tribunais = document.getElementsByName('tribunais');
+                    if (tribunais.length > 0){
+                        for (var i = 0; i < tribunais.length; i++){
+                            if (tribunais[i].checked){
+                                form.tribunais.values.push(tribunais[i].value);
+                            }
+                        }
+                    }
+                    forms[order] = form;
+                }
+                
                 // Recupera as unidades de medidas
                 function getUnidadeMedidas(){
                     var tipoDroga = document.getElementById('tipo_droga').value;
@@ -194,13 +237,52 @@ and open the template in the editor.
                     document.getElementById('unidade_medida').innerHTML = options;
                 }
                 
+                
+                function loadChart(order){
+                    
+                    if(typeof forms[order] === 'undefined'){
+                        alert('Não existem dados a serem carregados!');
+                    }else{
+                        form = forms[order];
+                        document.getElementById('tipo_droga').innerHTML = form.tipoDroga.innerHtml;
+                        document.getElementById('tipo_droga').value = form.tipoDroga.value;
+                        document.getElementById('unidade_medida').innerHTML = form.unidadeMedida.innerHtml;
+                        document.getElementById('unidade_medida').value = form.unidadeMedida.value;
+                        document.getElementById('qt_minima').value = form.qtMinima.value;
+                        document.getElementById('qt_maxima').value = form.qtMaxima.value;
+                        
+                        document.getElementById('div_tribunais').innerHTML = form.tribunais.innerHtml;
+                        
+                        var tribunais = document.getElementsByName('tribunais');
+                        if (tribunais.length > 0){
+                            for (var i = 0; i < tribunais.length; i++){
+                                if(form.tribunais.values.indexOf(tribunais[i].value) > -1){
+                                    tribunais[i].checked = 'checked';
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                function cleanChart(order){
+                    if (tipoGrafico === 'SOBREPOSTO'){
+                        if(order === 1){
+                            
+                        }
+                    }
+                    delete(forms[order]);
+                    document.getElementById('chart_'+order).innerHTML = '';
+                }
+                
                 // Inicia a criacao do Grafico
-                function drawChart(){
-                    var tipoDroga = document.getElementById('tipo_droga').value;
-                    var unidadeMedida = document.getElementById('unidade_medida').value;
-                    var qtMinima = document.getElementById('qt_minima').value;
-                    var qtMaxima = document.getElementById('qt_maxima').value;
-                    var tribunais = document.getElementsByName('tribunais');
+                function createChart(order){
+                    saveForm(order);
+                    
+                    var tipoDroga = forms[order].tipoDroga.value;
+                    var unidadeMedida = forms[order].unidadeMedida.value;
+                    var qtMinima = forms[order].qtMinima.value;
+                    var qtMaxima = forms[order].qtMaxima.value;
+                    var tribunais = forms[order].tribunais.values;
                     
                     // Inicia a criacao dos filtros
                     var filtros = '';
@@ -213,20 +295,12 @@ and open the template in the editor.
                         filtros += ' AND F <= '+qtMaxima;
                     }
                     
-                    var tribunaisArray = [];
-                    if (tribunais.length > 0){
-                        for (var i = 0; i < tribunais.length; i++){
-                            if (tribunais[i].checked){
-                                tribunaisArray.push(tribunais[i].value);
-                            }
-                        }
-                    }
-                    for (var i = 0; i < tribunaisArray.length; i++){
+                    for (var i = 0; i < tribunais.length; i++){
                         if(i === 0) filtros += ' AND ( ';
                             
-                        filtros +=  'B LIKE \''+tribunaisArray[i]+'\'';
+                        filtros +=  'B LIKE \''+tribunais[i]+'\'';
                         
-                        if(i === tribunaisArray.length-1){
+                        if(i === tribunais.length-1){
                             filtros += ' ) ';
                         }else{
                             filtros += ' OR ';
@@ -243,50 +317,65 @@ and open the template in the editor.
                         
                         toggleOverlay();
                         
-                        query.send(handleResponseDrawChart);
+                        query.send(function (response){
+                            handleResponseDrawChart(response, order);
+                        });
 
                     }
                     return false;
                 }
                 
                 // Gera o Grafico com a resposta da funcao drawChart
-                function handleResponseDrawChart(response){
+                function handleResponseDrawChart(response, order){
+                    
                     toggleOverlay();
                     if (response.isError()) {
                         alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
                         return;
                     }
                     
-                    var unidadeMedida = document.getElementById('unidade_medida').value;
-                    var dataResponse = response.getDataTable();
-                    var sizeRows = dataResponse.getNumberOfRows();
+                    dados[order] = response.getDataTable();
                     
                     var dataToDraw = new google.visualization.DataTable();
                     
                     dataToDraw.addColumn('number', 'Quantum de aumento');
-                    dataToDraw.addColumn('number', 'Quantidade');
+                    dataToDraw.addColumn('number', 'Gráfico 1');
                     dataToDraw.addColumn({type:'string',role:'tooltip', p:{html:true}});
                     
-                    for(var i = 0; i < sizeRows; i++){
-                        var quantumTotal = quantumCalc([dataResponse.getValue(i,3),dataResponse.getValue(i,4),dataResponse.getValue(i,5)]);
-                        var tooltip = 'Tribunal: <b>'+ dataResponse.getValue(i,1)+'</b><br/>\
-                            Processo: <b>'+dataResponse.getValue(i,0)+'</b><br/>\
-                            Quantidade: <b>'+dataResponse.getValue(i,2)+' '+unidadeMedida.toLowerCase()+'</b><br/>\
-                            Quantum de aumento: <b>'+quantumTotal+' meses</b>';
-                        
-                        dataToDraw.addRow([{v:quantumTotal}, {v:dataResponse.getValue(i,2)}, tooltip]);
+                    if (tipoGrafico === 'SOBREPOSTO'){
+                        dataToDraw.addColumn('number', 'Gráfico 2');
+                        dataToDraw.addColumn({type:'string',role:'tooltip', p:{html:true}});
                     }
-
+                    
+                    populateData(dataToDraw, order);
+                    
+                    if (tipoGrafico === 'SOBREPOSTO' && order === 1 && (typeof dados[2] != 'undefined')){
+                        populateData(dataToDraw, 2);
+                    }else if (tipoGrafico === 'SOBREPOSTO' && order === 2 && (typeof dados[1] != 'undefined')){
+                        populateData(dataToDraw, 1);
+                    }
+                    
+                    var title = '';
+                    
+                    if (tipoGrafico == 'UNICO' || tipoGrafico == 'SOBREPOSTO'){
+                        title = 'Quantidade X Quantum de Aumento';
+                    }else{
+                        title = 'Gráfico '+order;
+                    }
+                    
+                    var colorsButtons = ['#337ab7','#5cb85c','#d9534f','#f0ad4e','#5bc0de'];
+                    
                     // Set chart options
                     var options = {
-                        title: 'Quantidade X Quantum de Aumento',
+                        title: title,
                         height: '600',
                         hAxis: {title: 'Quantum de Aumento'},//, minValue: 0, maxValue: 100},
                         vAxis: {title: 'Quantidade'},//, minValue: 0, maxValue: 100},
-                        legend: 'none',
+                        //legend: 'none',
                         tooltip: {
                             isHtml: true
-                        }
+                        },
+                        colors: tipoGrafico == 'MULTIPLO' ? [colorsButtons[order-1]]:colorsButtons
                         
                         //explorer: {
                         //    maxZoomIn: 15,
@@ -295,26 +384,56 @@ and open the template in the editor.
                         //    keepInBounds: true
                         //}
                     };
-
-                    var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+                    
+                    if (tipoGrafico !== 'SOBREPOSTO'){
+                        options.legend = 'none';
+                        var chart = new google.visualization.ScatterChart(document.getElementById('chart_'+order));
+                    }else{
+                        var chart = new google.visualization.ScatterChart(document.getElementById('chart_1'));
+                    }
 
                     chart.draw(dataToDraw, options);
                     
-                    var table = new google.visualization.Table(document.getElementById('table_div'));
-                    table.draw(dataResponse);
+                    if (tipoGrafico === 'UNICO'){
+                        var table = new google.visualization.Table(document.getElementById('chart_table'));
+                        table.draw(dados[order]);
+                    }
+                }
+                
+                function populateData(dataToDraw, order){
+                    
+                    var rowsLength = dados[order].getNumberOfRows();
+                    for(var i = 0; i < rowsLength; i++){
+                        var quantumTotal = quantumCalc([dados[order].getValue(i,3),dados[order].getValue(i,4),dados[order].getValue(i,5)]);
+                        var tooltip = 'Tribunal: <b>'+ dados[order].getValue(i,1)+'</b><br/>\
+                            Processo: <b>'+dados[order].getValue(i,0)+'</b><br/>\
+                            Quantidade: <b>'+dados[order].getValue(i,2)+' '+forms[order].unidadeMedida.value.toLowerCase()+'</b><br/>\
+                            Quantum de aumento: <b>'+quantumTotal+' meses</b>';
+                            
+                            
+                        if (tipoGrafico == 'SOBREPOSTO'){
+                            if (order === 1){
+                                dataToDraw.addRow([{v:quantumTotal}, {v:dados[order].getValue(i,2)}, tooltip, null, null]);
+                            }else{
+                                dataToDraw.addRow([{v:quantumTotal}, null, null, {v:dados[order].getValue(i,2)}, tooltip]);
+                            } 
+                        }else{
+                            dataToDraw.addRow([{v:quantumTotal}, {v:dados[order].getValue(i,2)}, tooltip]);
+                        }
+                    }
                 }
                 
                 // Calcula o total do quantum de aumento
                 function quantumCalc(values){
                     var result = 0;
-                    //console.log(values);
+
                     for (var i = 0; i < 3; i++){
                         if(values[i] != null){
                             var value = values[i].split(/a|m|d/);
                             result += (Number(value[0]) * 12) + Number(value[1]) + (Number(value[2])/30);
                         }
                     }
-                    //console.log(result);
+
                     return result;
                 }
                 
