@@ -26,7 +26,7 @@ and open the template in the editor.
                 </div>
                 <form id="formulario" onSubmit='return false;' class="form-horizontal">
                     <div class="form-group">
-                        <label for="tipo_grafico" class="col-sm-2">Tipo de gráfico<span class="text-danger">*</span></label>
+                        <label for="tipo_grafico_select" class="col-sm-2">Tipo de gráfico<span class="text-danger">*</span></label>
                         <div class="col-sm-3">
                             <select id="tipo_grafico_select" onChange='beginning();' class="form-control">
                                 <option></option>
@@ -68,9 +68,46 @@ and open the template in the editor.
                                 <input id="qt_maxima" type="number" class="form-control"/>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div id="div_tribunais" class="form-group">
                             <label class="col-sm-2">Tribunais</label>
-                            <div id="div_tribunais" class="col-sm-10"></div>
+                            <div class="col-sm-10">
+                                <label class="checkbox-inline"><input name="tribunais" class="TRF" value="TRF1" type="checkbox" onchange="checkAll('TRF');">TRF1</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TRF" value="TRF2" type="checkbox" onchange="checkAll('TRF');">TRF2</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TRF" value="TRF3" type="checkbox" onchange="checkAll('TRF');">TRF3</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TRF" value="TRF4" type="checkbox" onchange="checkAll('TRF');">TRF4</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TRF" value="TRF5" type="checkbox" onchange="checkAll('TRF');">TRF5</label>
+                                <label class="checkbox-inline" style="font-weight: 600"><input class="select_all_TRF" type="checkbox" onchange="checkAll('TRF', true);">Todos TRFs</label>
+                            </div>
+                            <div class="col-sm-10 col-sm-offset-2">
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJAC" type="checkbox" onchange="checkAll('TJ');">TJAC</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJAL" type="checkbox" onchange="checkAll('TJ');">TJAL</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJAP" type="checkbox" onchange="checkAll('TJ');">TJAP</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJAM" type="checkbox" onchange="checkAll('TJ');">TJAM</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJBA" type="checkbox" onchange="checkAll('TJ');">TJBA</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJCE" type="checkbox" onchange="checkAll('TJ');">TJCE</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJDF" type="checkbox" onchange="checkAll('TJ');">TJDF</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJES" type="checkbox" onchange="checkAll('TJ');">TJES</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJGO" type="checkbox" onchange="checkAll('TJ');">TJGO</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJMA" type="checkbox" onchange="checkAll('TJ');">TJMA</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJMT" type="checkbox" onchange="checkAll('TJ');">TJMT</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJMS" type="checkbox" onchange="checkAll('TJ');">TJMS</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJMG" type="checkbox" onchange="checkAll('TJ');">TJMG</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJPA" type="checkbox" onchange="checkAll('TJ');">TJPA</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJPB" type="checkbox" onchange="checkAll('TJ');">TJPB</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJPR" type="checkbox" onchange="checkAll('TJ');">TJPR</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJPE" type="checkbox" onchange="checkAll('TJ');">TJPE</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJPI" type="checkbox" onchange="checkAll('TJ');">TJPI</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJRJ" type="checkbox" onchange="checkAll('TJ');">TJRJ</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJRN" type="checkbox" onchange="checkAll('TJ');">TJRN</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJRS" type="checkbox" onchange="checkAll('TJ');">TJRS</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJRO" type="checkbox" onchange="checkAll('TJ');">TJRO</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJRR" type="checkbox" onchange="checkAll('TJ');">TJRR</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJSC" type="checkbox" onchange="checkAll('TJ');">TJSC</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJSP" type="checkbox" onchange="checkAll('TJ');">TJSP</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJSE" type="checkbox" onchange="checkAll('TJ');">TJSE</label>
+                                <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJTO" type="checkbox" onchange="checkAll('TJ');">TJTO</label>
+                                <label class="checkbox-inline" style="font-weight: 600"><input class="select_all_TJ" type="checkbox" onchange="checkAll('TJ', true);">Todos TJs</label>
+                            </div>
                         </div>
                     </fieldset>
                 </form>
@@ -112,11 +149,35 @@ and open the template in the editor.
                     return '<div class="col-sm-2 botton-15">'+content+'</div>'
                 }
                 
-                function getButtons(content, order, action){
+                function getButton(content, order, action){
                     action = action || 'create';
                     var actions = {create: 'createChart('+order+');', load: 'loadChart('+order+');', clean: 'cleanChart('+order+');'};
                     var classe = {1: 'primary', 2: 'success', 3: 'danger', 4: 'warning', 5: 'info'};
                     return '<button class="btn btn-'+classe[order]+' btn-block" onClick="'+actions[action]+'">'+content+'</button>';
+                }
+                
+                function checkAll(className, selectAll){
+                    selectAll = selectAll || false;
+                    var elements = document.getElementsByClassName(className);
+                    
+                    var allChecked = true;
+                    
+                    for(var i = 0; i < elements.length; i++){
+                        if (selectAll){
+                            if (document.getElementsByClassName('select_all_'+className)[0].checked){
+                                elements[i].checked = true;
+                            }else{
+                                elements[i].checked = false;
+                            }
+                        }else{
+                            if(allChecked !== false){
+                                allChecked = elements[i].checked;
+                            }
+                            if (i === elements.length - 1){
+                                document.getElementsByClassName('select_all_'+className)[0].checked = allChecked;
+                            }
+                        }
+                    }
                 }
                 
                 // Recupera as drogas que constam na planilha
@@ -130,12 +191,15 @@ and open the template in the editor.
                     var secondaryButtons = '';
   
                     if (tipoGrafico === 'UNICO'){
-                        primaryButtons = getDivButtons(getButtons('Gerar Gráficos', 1));
+                        primaryButtons = getDivButtons(getButton('Gerar Gráficos', 1));
                     }else if (tipoGrafico === 'SOBREPOSTO' || tipoGrafico === 'MULTIPLO'){
                         var total = tipoGrafico === 'SOBREPOSTO' ? 2 : 5;
                         for (var i = 1; i <= total; i++){
-                            primaryButtons += getDivButtons(getButtons('Gerar Gráfico '+i, i));;
-                            secondaryButtons += getDivButtons(getButtons('Ler Dados', i, 'load') + (tipoGrafico === 'MULTIPLO' ? getButtons('Limpar Gráfico '+i, i, 'clean'): ''));
+                            var buttons = getButton('Gerar Gráfico '+i, i) + getButton('Ler Dados', i, 'load');
+                            if (tipoGrafico === 'MULTIPLO' ){
+                                buttons += getButton('Limpar Gráfico '+i, i, 'clean');
+                            }
+                            primaryButtons += getDivButtons(buttons);
                         }
                     }else{
                         return false;
@@ -144,41 +208,52 @@ and open the template in the editor.
                     document.getElementById('primary_buttons').innerHTML = primaryButtons;
                     document.getElementById('secondary_buttons').innerHTML = secondaryButtons;
                     
-                    document.getElementById('tipo_droga').innerHTML = '<option>CARREGANDO...</oprion>';
+                    document.getElementById('tipo_droga').innerHTML = '<option></option>\
+                            <option value="COCAÍNA">COCAÍNA</option>\
+                            <option value="MACONHA">MACONHA</option>\
+                            <option value="CRACK">CRACK</option>\
+                            <option value="HEROÍNA">HEROÍNA</option>\
+                            <option value="SINTÉTICAS">SINTÉTICAS</option>\
+                            <option value="SEMENTES DE MACONHA">SEMENTES DE MACONHA</option>\
+                            <option value="HAXIXE">HAXIXE</option>\
+                            <option value="ÓPIO">ÓPIO</option>\
+                            <option value="LANÇA-PERFUME">LANÇA-PERFUME</option>\
+                            <option value="MERLA">MERLA</option>\
+                            <option value="OXI">OXI</option>';
                     
-                    var queryDrogas = new google.visualization.Query(
-                    'https://docs.google.com/spreadsheets/d/1sa1IoM5qmSOPmUoo6dC-YK6R1z__ysJ7aC2gq_azae4/gviz/tq?gid=1548055939');
-                    queryDrogas.send(function(response){
-                        if (response.isError()) {
-                            alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
-                            return;
-                        }
+                    //var queryDrogas = new google.visualization.Query(
+                    //'https://docs.google.com/spreadsheets/d/1sa1IoM5qmSOPmUoo6dC-YK6R1z__ysJ7aC2gq_azae4/gviz/tq?gid=1548055939');
+                    //queryDrogas.send(function(response){
+                    //    if (response.isError()) {
+                    //        alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+                    //        return;
+                    //    }
 
-                        var data = response.getDataTable();
-                        var numRows = data.getNumberOfRows();
-                        var options = '<option><\/option>';
-                        for(var i = 0; i < numRows; i++ ){
-                            options += '<option value="'+data.getValue(i, 0)+'">'+data.getValue(i, 0)+'</option>'
-                        }
-                        document.getElementById('tipo_droga').innerHTML = options;
-                    });
+                    //   var data = response.getDataTable();
+                    //    var numRows = data.getNumberOfRows();
+                    //    var options = '<option><\/option>';
+                    //    for(var i = 0; i < numRows; i++ ){
+                    //        options += '<option value="'+data.getValue(i, 0)+'">'+data.getValue(i, 0)+'</option>'
+                    //    }
+                    //    document.getElementById('tipo_droga').innerHTML = options;
+                    //});
                     
-                    var queryTribunais = new google.visualization.Query(
-                    'https://docs.google.com/spreadsheets/d/1sa1IoM5qmSOPmUoo6dC-YK6R1z__ysJ7aC2gq_azae4/gviz/tq?gid=1195586804');
-                    queryTribunais.send(function(response){
-                        if (response.isError()) {
-                            alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
-                            return;
-                        }
+                    //var queryTribunais = new google.visualization.Query(
+                    //'https://docs.google.com/spreadsheets/d/1sa1IoM5qmSOPmUoo6dC-YK6R1z__ysJ7aC2gq_azae4/gviz/tq?gid=1195586804');
+                    //queryTribunais.send(function(response){
+                    //    if (response.isError()) {
+                    //        alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+                    //        return;
+                    //    }
 
-                        var data = response.getDataTable();
-                        var numRows = data.getNumberOfRows();
-                        var inputs = '';
-                        for(var i = 0; i < numRows; i++ ){
-                            inputs += '<label class="checkbox-inline" style="margin: 0 10px 0 0"><input type="checkbox" name="tribunais" value="'+data.getValue(i, 0)+'"/>'+data.getValue(i, 0)+'</label>';
-                        }
-                        document.getElementById('div_tribunais').innerHTML = inputs;
-                    });
+                    //    var data = response.getDataTable();
+                    //    var numRows = data.getNumberOfRows();
+                    //    var inputs = '';
+                    //    for(var i = 0; i < numRows; i++ ){
+                    //        inputs += '<label class="checkbox-inline" ><input type="checkbox" name="tribunais" value="'+data.getValue(i, 0)+'"/>'+data.getValue(i, 0)+'</label>';
+                    //    }
+                    //    document.getElementById('div_tribunais').innerHTML = inputs;
+                    //});
                 };
                 
                 function saveForm(order){
@@ -208,16 +283,14 @@ and open the template in the editor.
                 function getUnidadeMedidas(){
                     var tipoDroga = document.getElementById('tipo_droga').value;
                     if (tipoDroga === ''){
-                        alert('em branco');
+                        alert('Selecione');
                     }else{
                         document.getElementById('unidade_medida').innerHTML = '<option>CARREGANDO...</option>';
-                        
                         var queryString = encodeURIComponent('SELECT G WHERE E = \''+tipoDroga+'\' AND G IS NOT NULL AND ( M IS NOT NULL OR N IS NOT NULL OR O IS NOT NULL)');
                         var query = new google.visualization.Query(
                         'https://docs.google.com/spreadsheets/d/1sa1IoM5qmSOPmUoo6dC-YK6R1z__ysJ7aC2gq_azae4/gviz/tq?gid=0&header=1&tq=' + queryString);
                         query.send(handleResponseUnidadeMedidas);
                     }
-                    
                 }
                 
                 // Trata a resposta da consulta do metodo getUnidadesMedidas
@@ -239,7 +312,6 @@ and open the template in the editor.
                 
                 
                 function loadChart(order){
-                    
                     if(typeof forms[order] === 'undefined'){
                         alert('Não existem dados a serem carregados!');
                     }else{
@@ -261,28 +333,31 @@ and open the template in the editor.
                                 }
                             }
                         }
+                        checkAll('TRF');
+                        checkAll('TJ');
                     }
                 }
                 
                 function cleanChart(order){
-                    if (tipoGrafico === 'SOBREPOSTO'){
-                        if(order === 1){
-                            
-                        }
-                    }
                     delete(forms[order]);
                     document.getElementById('chart_'+order).innerHTML = '';
                 }
                 
                 // Inicia a criacao do Grafico
                 function createChart(order){
-                    saveForm(order);
                     
-                    var tipoDroga = forms[order].tipoDroga.value;
-                    var unidadeMedida = forms[order].unidadeMedida.value;
-                    var qtMinima = forms[order].qtMinima.value;
-                    var qtMaxima = forms[order].qtMaxima.value;
-                    var tribunais = forms[order].tribunais.values;
+                    var tipoDroga = document.getElementById('tipo_droga').value;
+                    var unidadeMedida = document.getElementById('unidade_medida').value;
+                    var qtMinima = document.getElementById('qt_minima').value;
+                    var qtMaxima = document.getElementById('qt_maxima').value;
+                    var tribunais = [];
+                    
+                    var tribunaisElements = document.getElementsByName('tribunais');
+                    for (var i = 0; i < tribunaisElements.length; i++){
+                        if (tribunaisElements[i].checked){
+                           tribunais.push(tribunaisElements[i].value);
+                        }
+                    }
                     
                     // Inicia a criacao dos filtros
                     var filtros = '';
@@ -311,6 +386,7 @@ and open the template in the editor.
                     if (tipoDroga === '' || tipoDroga === 'CARREGANDO...'|| unidadeMedida === '' || unidadeMedida === 'CARREGANDO...'){
                         alert('Selecione a droga/unidade primeiro!');
                     }else{
+                        saveForm(order);
                         var queryString = encodeURIComponent('SELECT A, B, F, M, N, O WHERE E = \''+tipoDroga+'\' AND G LIKE \''+unidadeMedida+'\' AND ( M IS NOT NULL OR N IS NOT NULL OR O IS NOT NULL) '+filtros+' ORDER BY F ');
                         var query = new google.visualization.Query(
                         'https://docs.google.com/spreadsheets/d/1sa1IoM5qmSOPmUoo6dC-YK6R1z__ysJ7aC2gq_azae4/gviz/tq?gid=0&header=1&tq=' + queryString);
@@ -320,14 +396,12 @@ and open the template in the editor.
                         query.send(function (response){
                             handleResponseDrawChart(response, order);
                         });
-
                     }
                     return false;
                 }
                 
-                // Gera o Grafico com a resposta da funcao drawChart
+                // Gera o Grafico com a resposta da funcao createChart
                 function handleResponseDrawChart(response, order){
-                    
                     toggleOverlay();
                     if (response.isError()) {
                         alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
@@ -339,11 +413,11 @@ and open the template in the editor.
                     var dataToDraw = new google.visualization.DataTable();
                     
                     dataToDraw.addColumn('number', 'Quantum de aumento');
-                    dataToDraw.addColumn('number', 'Gráfico 1');
+                    dataToDraw.addColumn('number', tipoGrafico === 'SOBREPOSTO' ? generateLabel(1): generateLabel(order));
                     dataToDraw.addColumn({type:'string',role:'tooltip', p:{html:true}});
                     
                     if (tipoGrafico === 'SOBREPOSTO'){
-                        dataToDraw.addColumn('number', 'Gráfico 2');
+                        dataToDraw.addColumn('number', generateLabel(2));
                         dataToDraw.addColumn({type:'string',role:'tooltip', p:{html:true}});
                     }
                     
@@ -355,13 +429,7 @@ and open the template in the editor.
                         populateData(dataToDraw, 1);
                     }
                     
-                    var title = '';
-                    
-                    if (tipoGrafico == 'UNICO' || tipoGrafico == 'SOBREPOSTO'){
-                        title = 'Quantidade X Quantum de Aumento';
-                    }else{
-                        title = 'Gráfico '+order;
-                    }
+                    var title = (tipoGrafico === 'MULTIPLO' ? 'Grafico '+order+': ':'')+ 'Quantidade X Quantum de Aumento';
                     
                     var colorsButtons = ['#337ab7','#5cb85c','#d9534f','#f0ad4e','#5bc0de'];
                     
@@ -369,24 +437,16 @@ and open the template in the editor.
                     var options = {
                         title: title,
                         height: '600',
-                        hAxis: {title: 'Quantum de Aumento'},//, minValue: 0, maxValue: 100},
-                        vAxis: {title: 'Quantidade'},//, minValue: 0, maxValue: 100},
-                        //legend: 'none',
+                        hAxis: {title: 'Quantum de Aumento'},
+                        vAxis: {title: 'Quantidade'},
                         tooltip: {
                             isHtml: true
                         },
                         colors: tipoGrafico == 'MULTIPLO' ? [colorsButtons[order-1]]:colorsButtons
-                        
-                        //explorer: {
-                        //    maxZoomIn: 15,
-                        //   maxZoomOut: 0,
-                        //    axis: 'vertical',
-                        //    keepInBounds: true
-                        //}
                     };
                     
                     if (tipoGrafico !== 'SOBREPOSTO'){
-                        options.legend = 'none';
+                        //options.legend = 'none';
                         var chart = new google.visualization.ScatterChart(document.getElementById('chart_'+order));
                     }else{
                         var chart = new google.visualization.ScatterChart(document.getElementById('chart_1'));
@@ -400,6 +460,39 @@ and open the template in the editor.
                     }
                 }
                 
+                function generateLabel(order){
+                    var form = forms[order];
+                    
+                    if(typeof form == 'undefined'){
+                        return 'Gráfico '+order;
+                    }
+                    
+                    var tipoDroga = form.tipoDroga.value;
+                    var unidadeMedida = form.unidadeMedida.value;
+                    var qtMinima = form.qtMinima.value;
+                    var qtMaxima = form.qtMaxima.value;
+                    var tribunais = form.tribunais.values;
+                    
+                    var valores = [tipoDroga, unidadeMedida];
+                    
+                    if (qtMinima != '') valores.push('Maior que '+qtMinima);
+                    if (qtMaxima != '') valores.push('Menor que '+qtMaxima);
+                    
+                    valores = valores.concat(tribunais);
+
+                    var label = '';
+                    
+                    for (var i = 0; i < valores.length; i++){
+                        if(i > 0){
+                            label += ', ';
+                        }
+                        label += valores[i];
+                    }
+                    
+                    return label;
+                    
+                }
+                
                 function populateData(dataToDraw, order){
                     
                     var rowsLength = dados[order].getNumberOfRows();
@@ -409,7 +502,6 @@ and open the template in the editor.
                             Processo: <b>'+dados[order].getValue(i,0)+'</b><br/>\
                             Quantidade: <b>'+dados[order].getValue(i,2)+' '+forms[order].unidadeMedida.value.toLowerCase()+'</b><br/>\
                             Quantum de aumento: <b>'+quantumTotal+' meses</b>';
-                            
                             
                         if (tipoGrafico == 'SOBREPOSTO'){
                             if (order === 1){
