@@ -26,8 +26,8 @@ and open the template in the editor.
                 </div>
                 <form id="formulario" onSubmit='return false;' class="form-horizontal">
                     <div class="form-group">
-                        <label for="tipo_grafico_select" class="col-sm-2">Tipo de gráfico<span class="text-danger">*</span></label>
-                        <div class="col-sm-3">
+                        <label for="tipo_grafico_select" class="col-md-2 col-sm-3">Tipo de gráfico<span class="text-danger">*</span></label>
+                        <div class="col-md-3 col-sm-5">
                             <select id="tipo_grafico_select" onChange='beginning();' class="form-control">
                                 <option></option>
                                 <option value="UNICO">ÚNICO</option>
@@ -37,16 +37,16 @@ and open the template in the editor.
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="tipo_droga" class="col-sm-2">Selecione a droga<span class="text-danger">*</span></label>
-                        <div class="col-sm-3">
+                        <label for="tipo_droga" class="col-md-2 col-sm-3">Selecione a droga<span class="text-danger">*</span></label>
+                        <div class="col-md-3 col-sm-5">
                             <select id="tipo_droga" onChange='getUnidadeMedidas();' class="form-control">
                                 <option></option>
                             </select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="unidade_medida" class="col-sm-2">Selecione a unidade de medida<span class="text-danger">*</span></label>
-                        <div class="col-sm-3">
+                        <label for="unidade_medida" class="col-md-2 col-sm-3">Selecione a unidade de medida<span class="text-danger">*</span></label>
+                        <div class="col-md-3 col-sm-5">
                             <select id="unidade_medida" class="form-control">
                                 <option></option>
                             </select>
@@ -57,20 +57,20 @@ and open the template in the editor.
                     <fieldset>
                         <legend>Filtros</legend>
                         <div class="form-group">
-                            <label for="qt_minima" class="col-sm-2">Quantidade mínima</label>
-                            <div class="col-sm-3">
+                            <label for="qt_minima" class="col-md-2 col-sm-3">Quantidade mínima</label>
+                            <div class="col-md-3 col-sm-5">
                                 <input id="qt_minima" type="number" class="form-control"/>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="qt_maxima" class="col-sm-2">Quantidade máxima</label>
-                            <div class="col-sm-3">
+                            <label for="qt_maxima" class="col-md-2 col-sm-3">Quantidade máxima</label>
+                            <div class="col-md-3 col-sm-5">
                                 <input id="qt_maxima" type="number" class="form-control"/>
                             </div>
                         </div>
                         <div id="div_tribunais" class="form-group">
-                            <label class="col-sm-2">Tribunais</label>
-                            <div class="col-sm-10">
+                            <label class="col-md-2 col-sm-3">Tribunais</label>
+                            <div class="col-md-10 col-sm-9">
                                 <label class="checkbox-inline"><input name="tribunais" class="TRF" value="TRF1" type="checkbox" onchange="checkAll('TRF');">TRF1</label>
                                 <label class="checkbox-inline"><input name="tribunais" class="TRF" value="TRF2" type="checkbox" onchange="checkAll('TRF');">TRF2</label>
                                 <label class="checkbox-inline"><input name="tribunais" class="TRF" value="TRF3" type="checkbox" onchange="checkAll('TRF');">TRF3</label>
@@ -78,7 +78,7 @@ and open the template in the editor.
                                 <label class="checkbox-inline"><input name="tribunais" class="TRF" value="TRF5" type="checkbox" onchange="checkAll('TRF');">TRF5</label>
                                 <label class="checkbox-inline" style="font-weight: 600"><input class="select_all_TRF" type="checkbox" onchange="checkAll('TRF', true);">Todos TRFs</label>
                             </div>
-                            <div class="col-sm-10 col-sm-offset-2">
+                            <div class="col-md-10 col-sm-9 col-md-offset-2 col-sm-offset-3">
                                 <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJAC" type="checkbox" onchange="checkAll('TJ');">TJAC</label>
                                 <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJAL" type="checkbox" onchange="checkAll('TJ');">TJAL</label>
                                 <label class="checkbox-inline"><input name="tribunais" class="TJ" value="TJAP" type="checkbox" onchange="checkAll('TJ');">TJAP</label>
@@ -118,14 +118,14 @@ and open the template in the editor.
                 </div>
                 <div id="secondary_buttons" class="row">
                 </div>
-                <div id="chart_1"></div>
-                <div id="chart_2"></div>
-                <div id="chart_3"></div>
-                <div id="chart_4"></div>
-                <div id="chart_5"></div>
+                <div id="chart_1" class="no-break"></div>
+                <div id="chart_2" class="no-break"></div>
+                <div id="chart_3" class="no-break"></div>
+                <div id="chart_4" class="no-break"></div>
+                <div id="chart_5" class="no-break"></div>
                 <div id="chart_table"></div>
-            </div> <!-- FIm div container -->
-        </div> <!-- FIm div wrap -->
+            </div> <!-- Fim div container -->
+        </div> <!-- Fim div wrap -->
         <div class="footer">
             <div class="container text-center">
                 Ministério Público Federal<br/>
@@ -153,7 +153,7 @@ and open the template in the editor.
                     action = action || 'create';
                     var actions = {create: 'createChart('+order+');', load: 'loadChart('+order+');', clean: 'cleanChart('+order+');'};
                     var classe = {1: 'primary', 2: 'success', 3: 'danger', 4: 'warning', 5: 'info'};
-                    return '<button class="btn btn-'+classe[order]+' btn-block" onClick="'+actions[action]+'">'+content+'</button>';
+                    return '<button class="btn btn-'+classe[order]+' btn-block hidden-print" onClick="'+actions[action]+'">'+content+'</button>';
                 }
                 
                 function checkAll(className, selectAll){
@@ -436,7 +436,7 @@ and open the template in the editor.
                     // Set chart options
                     var options = {
                         title: title,
-                        height: '600',
+                        height: '650',
                         hAxis: {title: 'Quantum de Aumento'},
                         vAxis: {title: 'Quantidade'},
                         tooltip: {
@@ -483,11 +483,10 @@ and open the template in the editor.
                     var label = '';
                     
                     for (var i = 0; i < valores.length; i++){
-                        if(i > 0){
-                            label += ', ';
-                        }
-                        label += valores[i];
+                        label += valores[i]+', ';
                     }
+                    
+                    label += dados[order].getNumberOfRows()+' REGISTROS';
                     
                     return label;
                     
